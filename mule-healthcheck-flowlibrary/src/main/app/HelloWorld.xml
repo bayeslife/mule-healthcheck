@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule   xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:core="http://www.mulesoft.org/schema/mule/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:http="http://www.mulesoft.org/schema/mule/http"
+        xmlns:spring="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <http:listener-config doc:name="HTTP Listener Configuration" host="0.0.0.0" name="HTTP_Listener_Configuration" port="${http.port}"/>
+
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="${provider.port}" basePath="/api/" doc:name="HTTP Request Configuration" protocol="HTTP"/>
+
+    <!--xmlns:api-platform-gw="http://www.mulesoft.org/schema/mule/api-platform-gw"-->
+    <!--http://www.mulesoft.org/schema/mule/api-platform-gw http://www.mulesoft.org/schema/mule/api-platform-gw/current/mule-api-platform-gw.xsd-->
+    <!--<api-platform-gw:api apiName="api-name" id="1234" version="v1611" flowRef="HelloWorldFlow1" create="true" doc:name="API Autodiscovery">-->
+        <!--<api-platform-gw:description>Discover this API on Anypoint Platform and in my Organization.</api-platform-gw:description>-->
+    <!--</api-platform-gw:api>-->
+
+
+    <flow name="HelloWorldFlow1">
+        <http:listener config-ref="HTTP_Listener_Configuration" doc:description="This endpoint receives an HTTP message." doc:name="Receive HTTP request" path="helloWorld"/>
+        <set-payload doc:description="This processor sets the payload of the message to the string 'Hello World'." doc:name="Set Payload to a constant string" value="Hello World"/>
+
+        <http:request config-ref="HTTP_Request_Configuration" path="/api/test" method="GET" doc:name="HTTP"/>
+
+        <http:request config-ref="HTTP_Request_Configuration" path="/api/test2" method="POST" doc:name="HTTP"/>
+    </flow>
+</mule>

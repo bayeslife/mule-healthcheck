@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:jersey="http://www.mulesoft.org/schema/mule/jersey"  xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jersey http://www.mulesoft.org/schema/mule/jersey/current/mule-jersey.xsd">
+    <http:listener-config doc:name="HTTP Listener Configuration" host="0.0.0.0" name="Health_Listener_Configuration" port="${healthcheck.port}"/>
+    <spring:beans>
+        <spring:bean name="componentNotificationLogger" class="bayeslife.MuleContextIntrospectionListener"/>
+        <spring:bean name="httpRequestValidator" class="bayeslife.healthcheck.validator.HttpRequesterValidator"/>
+    </spring:beans>
+	
+	<notifications>
+	  <notification event="COMPONENT-MESSAGE"/>
+	  <notification-listener ref="componentNotificationLogger"/>
+	</notifications>
+
+    <spring:beans>
+        <spring:bean name="API.Version" class="bayeslife.healthcheck.model.HealthReport">
+            <spring:property name="apiIdentifier" value="${apiId}"/>
+            <spring:property name="apiVersion" value="${apiVersion}"/>
+        </spring:bean>
+    </spring:beans>
+
+    <flow name="HealthCheck">
+        <http:listener config-ref="Health_Listener_Configuration" doc:description="This endpoint receives an HTTP message." doc:name="Receive HTTP request" path="health"/>
+        <component class="bayeslife.HealthCheckProcessor"/>
+    </flow>
+
+</mule>
